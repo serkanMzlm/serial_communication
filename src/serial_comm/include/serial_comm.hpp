@@ -35,12 +35,12 @@ class SerialComm : public rclcpp::Node{
         uint8_t buffer[7];
         float joy[4];
         int button[4];
-        uint8_t curr_byte, prev_byte;
+        uint8_t curr_byte , prev_byte ;
         int state = 0;
         JoyMsg msg;
 
     public:
-        SerialComm(std::string dev_name = "/dev/ttyUSB0");
+        SerialComm(std::string dev_name = FILE_NAME);
         ~SerialComm();
         bool initPort();
         bool configure();
@@ -48,8 +48,7 @@ class SerialComm : public rclcpp::Node{
     
     private:
         rclcpp::Publisher<JoyMsg>::SharedPtr joy_pub;
-        rclcpp::TimerBase::SharedPtr timer_;
-        
+        rclcpp::TimerBase::SharedPtr timer_;  
 };
 
 #endif

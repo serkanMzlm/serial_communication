@@ -71,8 +71,8 @@ bool SerialComm::configure(){
     tty.c_cc[VTIME] = 10;  
     tty.c_cc[VMIN] = 1;
 
-    // cfsetispeed(&tty, B9600);
-    cfsetspeed(&tty, B9600);
+    // cfsetispeed(&tty, BAUDRATE);
+    cfsetspeed(&tty, BAUDRATE);
     tcflush(port_, TCIFLUSH);
     if (tcsetattr(port_, TCSANOW, &tty) != 0) {
         std::cout << "Error " << errno << " from tcsetattr : " << strerror(errno) << std::endl;
@@ -85,6 +85,9 @@ bool SerialComm::configure(){
 
 void SerialComm::dataRead(){
   while (read(port_, &curr_byte, 1) > 0){
+#ifdef DEBUG
+    std::cout << "value:" << static_cast<int>(curr_byte) << std::endl;
+#else 
     if(state == 0){
         if(curr_byte == HEADER_ && prev_byte == FOOTHER_){
             buffer[state++] = curr_byte;
@@ -98,19 +101,6 @@ void SerialComm::dataRead(){
         state = 0;
         prev_byte = curr_byte;
         if(curr_byte == FOOTHER_){
-            // joy[4]    = mapValues(static_cast<float>(buffer[1]), 0, 200, -1, 1);
-            // joy[3]    = mapValues(static_cast<float>(buffer[2]), 0, 200, -1, 1);
-            // joy[1]    = mapValues(static_cast<float>(buffer[3]), 0, 200, -1, 1);
-            // joy[0]    = mapValues(static_cast<float>(buffer[4]), 0, 200, -1, 1);
-
-            // button[1] = static_cast<int>(((buffer[5] == 1) ? 1 : 0));
-            // button[0] = static_cast<int>(((buffer[5] == 2) ? 1 : 0));
-            // button[6] = static_cast<int>(((buffer[5] == 3) ? 1 : 0));
-            // button[7] = static_cast<int>(((buffer[5] == 4) ? 1 : 0));
-            // std::cout << joy[0] << " " << joy[1] << " " <<
-            // joy[2] << " " << joy[3] << " " << button[0] <<
-            // " " << button[1] << " " << button[2] << " " <<
-            // button[3] << std::endl;
             msg.axes[4]    = mapValues(static_cast<float>(buffer[1]), 0, 200, -1, 1);
             msg.axes[3]    = mapValues(static_cast<float>(buffer[2]), 0, 200, -1, 1);
             msg.axes[1]    = mapValues(static_cast<float>(buffer[3]), 0, 200, -1, 1);
@@ -128,14 +118,13 @@ void SerialComm::dataRead(){
         state = 0;
     }
     prev_byte = curr_byte;
+#endif
   }
 }
 
 int main(int argc, char* argv[]){
-
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<SerialComm>());
     rclcpp::shutdown();
-
     return 0;
 }
