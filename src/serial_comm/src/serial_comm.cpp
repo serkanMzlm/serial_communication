@@ -58,16 +58,20 @@ bool SerialComm::configure(){
     tty.c_cflag &= ~CSIZE;
     tty.c_cflag |= CS8;
     tty.c_cflag &= ~CRTSCTS;
-    tty.c_cflag |= CREAD | CLOCAL; 
+    tty.c_cflag |= CREAD | CLOCAL;
+
     tty.c_lflag &= ~ICANON;
     tty.c_lflag &= ~ECHO;  
     tty.c_lflag &= ~ECHOE; 
     tty.c_lflag &= ~ECHONL;
-    tty.c_lflag &= ~ISIG;  
+    tty.c_lflag &= ~ISIG; 
+
     tty.c_iflag &= ~(IXON | IXOFF | IXANY);
     tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
+
     tty.c_oflag &= ~OPOST;
     tty.c_oflag &= ~ONLCR;
+
     tty.c_cc[VTIME] = 10;  
     tty.c_cc[VMIN] = 1;
 
@@ -86,7 +90,12 @@ bool SerialComm::configure(){
 void SerialComm::dataRead(){
   while (read(port_, &curr_byte, 1) > 0){
 #ifdef DEBUG
+    int value =  static_cast<int>(curr_byte);
+    if (flag_){
     std::cout << "value:" << static_cast<int>(curr_byte) << std::endl;
+    }
+    if(value == CONTROL_BYTE || FLAG_DISABLE){ flag_ = true; }
+    else { flag_ = false; }
 #else 
     if(state == 0){
         if(curr_byte == HEADER_ && prev_byte == FOOTHER_){

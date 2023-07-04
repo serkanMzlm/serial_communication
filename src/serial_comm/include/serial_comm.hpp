@@ -31,13 +31,16 @@ double mapValues(double au32_IN, double au32_INmin, double au32_INmax, double au
 class SerialComm : public rclcpp::Node{
     private:
         std::string dev_;
+        bool flag_ = false;
         int port_;
-        uint8_t buffer[7];
-        float joy[4];
-        int button[4];
-        uint8_t curr_byte , prev_byte ;
         int state = 0;
+        int button[4];
+        float joy[4];
+        uint8_t buffer[7];
+        uint8_t curr_byte , prev_byte ;
         JoyMsg msg;
+        rclcpp::Publisher<JoyMsg>::SharedPtr joy_pub;
+        rclcpp::TimerBase::SharedPtr timer_;  
 
     public:
         SerialComm(std::string dev_name = FILE_NAME);
@@ -45,10 +48,6 @@ class SerialComm : public rclcpp::Node{
         bool initPort();
         bool configure();
         void dataRead();
-    
-    private:
-        rclcpp::Publisher<JoyMsg>::SharedPtr joy_pub;
-        rclcpp::TimerBase::SharedPtr timer_;  
 };
 
 #endif

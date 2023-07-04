@@ -1,0 +1,16 @@
+{
+  "version":"2.0.0",
+  "tasks":[
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && colcon build"
+    },
+    {
+      "label": "serial_build",
+      "type": "shell",
+      "command": "colcon build --packages-select serial_comm",
+      "problemMatcher": []
+    }
+  ]
+}

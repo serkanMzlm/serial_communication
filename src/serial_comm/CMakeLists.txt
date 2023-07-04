@@ -9,8 +9,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-add_definitions(-DDEBUG)
+add_definitions(-DDEBUG)             
 add_definitions(-DBAUDRATE=B115200)
+add_definitions(-DCONTROL_BYTE=11)
+add_definitions(-DFLAG_DISABLE=true)
 add_definitions(-DFILE_NAME="/dev/ttyACM0")
 
 file(GLOB_RECURSE SRC_FILE src/*.cpp)
