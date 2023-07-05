@@ -31,6 +31,7 @@ bool SerialComm::initPort(){
         std::cout << "Error configure..." << std::endl;
         return false;
     }
+    usleep(1000000);
     return true;
 }
 
